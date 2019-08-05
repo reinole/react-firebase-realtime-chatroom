@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import fire from '../fire';
+import useLocalStorageWithState from '../hooks/useLocalStorageWithState';
 
 export default function GlobalChatPage() {
 	const [messages, setMessages] = useState([]);
 	const [newMsg, setNewMsg] = useState('');
+	const [setValue] = useLocalStorageWithState('userData');
 
 	const globalChat = fire
 		.database()
@@ -34,9 +36,14 @@ export default function GlobalChatPage() {
 		}
 	};
 
+	const SignOut = () => {
+		setValue(null);
+	};
+
 	return (
 		<Wrapper>
 			<ChatName>Global Chat</ChatName>
+			<button onClick={SignOut}>Sign out</button>
 			<MessageWindow>
 				<ul>
 					{Object.keys(messages).map(message => {

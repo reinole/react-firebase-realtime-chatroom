@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import uuid4 from 'uuid4';
 
+import useLocalStorageWithState from '../hooks/useLocalStorageWithState';
 import fire from '../fire';
 
 export default function LandingPage() {
 	const [nickname, setNickname] = useState('');
 	const [email, setEmail] = useState('');
+
+	const [value, setValue] = useLocalStorageWithState('userData');
 
 	const userdb = fire
 		.database()
@@ -21,24 +25,42 @@ export default function LandingPage() {
 	};
 
 	const handleRegisterUser = () => {
-		userdb.push({ nickname: nickname, email: email });
+		// Først sjekk om eposten er registrert
+		// sjekk om brukernavnet er i bruk
+		//userdb.once('value', handleNewMessages);
+
+		const userObj = {
+			nickname: nickname,
+			email: email
+		};
+
+		userdb.push({ nickname: nickname, email: email, uid: uuid4() });
+		setValue(JSON.stringify(userObj));
 	};
 
 	return (
 		<Wrapper>
 			<FormWrapper>
 				<FormTitle>Register User</FormTitle>
-				{console.log(nickname)}
-				{console.log(email)}
+
 				<Form onSubmit={handleRegisterUser}>
 					<UserLabels>Nickname</UserLabels>
-					<Username
+					<InputField
 						placeholder='Enter nickname'
+						type='text'
 						onChange={handleNicknameChange}
+						required
+						minLength='5'
+						maxLength='15'
 					/>
 					<UserLabels>Email</UserLabels>
-					<UserEmail placeholder='Enter email' onChange={handleEmailChange} />
-					<button type='submit'>Submit</button>
+					<InputField
+						placeholder='Enter email'
+						type='email'
+						onChange={handleEmailChange}
+						required
+					/>
+					<SubmitButton type='submit'>Register and enter chat</SubmitButton>
 				</Form>
 			</FormWrapper>
 		</Wrapper>
@@ -68,10 +90,20 @@ const Form = styled.form`
 
 const UserLabels = styled.label``;
 
-const Username = styled.input`
+const InputField = styled.input`
+	border-radius: 5px;
+	border: 1px solid pink;
+	padding: 0.7rem 1rem 0.5rem 1rem;
 	width: 16rem;
+	margin-bottom: 0.5rem;
 `;
 
-const UserEmail = styled.input`
-	width: 16rem;
+const SubmitButton = styled.button`
+	border-radius: 5px;
+	border: 1px solid pink;
+	padding: 0.7rem 1rem 0.5rem 1rem;
+	width: 100%;
+	margin-top: 0.5rem;
+	background-color: white;
+	font-weight: bold;
 `;
