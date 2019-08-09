@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+import LandingPage from './LandingPage';
 import fire from '../fire';
 import useLocalStorageWithState from '../hooks/useLocalStorageWithState';
 
 export default function GlobalChatPage() {
-	const [messages, setMessages] = useState([]);
+	const [messages, setMessages] = useState({});
 	const [newMsg, setNewMsg] = useState('');
-	const [setValue] = useLocalStorageWithState('userData');
+	const [value, setValue] = useLocalStorageWithState('userData');
+	const [joined, setJoined] = useState(false);
+
+	//check value of localstorage on mount
+	// if nothing there show LandingPage
+	// if nickname there do not show LandingPage
 
 	const globalChat = fire
 		.database()
@@ -15,6 +21,7 @@ export default function GlobalChatPage() {
 		.child('messages');
 
 	useEffect(() => {
+		checkLocalStorage();
 		const handleNewMessages = snap => {
 			if (snap.val()) setMessages(snap.val());
 		};
@@ -25,13 +32,21 @@ export default function GlobalChatPage() {
 		};
 	}, []);
 
+	const checkLocalStorage = () => {
+		if (value === 'null' || value === '') {
+			return <LandingPage />;
+		} else {
+			console.log(value);
+		}
+	};
+
 	const handleMsgChange = e => {
 		setNewMsg(e.target.value);
 	};
 
 	const handleKeyDown = e => {
 		if (e.key === 'Enter') {
-			globalChat.push(newMsg);
+			globalChat.push({ sender: value, message: newMsg });
 			setNewMsg('');
 		}
 	};
@@ -43,12 +58,20 @@ export default function GlobalChatPage() {
 	return (
 		<Wrapper>
 			<ChatName>Global Chat</ChatName>
+			{checkLocalStorage()}
 			<button onClick={SignOut}>Sign out</button>
 			<MessageWindow>
 				<ul>
 					{Object.keys(messages).map(message => {
+						console.log(messages[message].message);
+						console.log(messages[message].sender);
+
 						return (
-							<DisplaySenderMessages>{messages[message]}</DisplaySenderMessages>
+							<DisplaySenderMessages>
+								<span>{messages[message].sender}</span>
+								<br />
+								<span>{messages[message].message}</span>
+							</DisplaySenderMessages>
 						);
 					})}
 				</ul>

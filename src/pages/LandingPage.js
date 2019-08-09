@@ -1,48 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState } from 'reactn';
 import styled from 'styled-components';
-import uuid4 from 'uuid4';
 
 import useLocalStorageWithState from '../hooks/useLocalStorageWithState';
-import fire from '../fire';
 
 export default function LandingPage() {
 	const [nickname, setNickname] = useState('');
-	const [email, setEmail] = useState('');
 
 	const [value, setValue] = useLocalStorageWithState('userData');
-
-	const userdb = fire
-		.database()
-		.ref()
-		.child('users');
-
-	const handleEmailChange = e => {
-		setEmail(e.target.value);
-	};
 
 	const handleNicknameChange = e => {
 		setNickname(e.target.value);
 	};
 
-	const handleRegisterUser = () => {
-		// Først sjekk om eposten er registrert
-		// sjekk om brukernavnet er i bruk
-		//userdb.once('value', handleNewMessages);
-
-		const userObj = {
-			nickname: nickname,
-			email: email
-		};
-
-		userdb.push({ nickname: nickname, email: email, uid: uuid4() });
-		setValue(JSON.stringify(userObj));
+	const handleRegisterUser = e => {
+		setValue(nickname, nickname);
 	};
 
 	return (
 		<Wrapper>
 			<FormWrapper>
 				<FormTitle>Register User</FormTitle>
-
 				<Form onSubmit={handleRegisterUser}>
 					<UserLabels>Nickname</UserLabels>
 					<InputField
@@ -53,13 +30,7 @@ export default function LandingPage() {
 						minLength='5'
 						maxLength='15'
 					/>
-					<UserLabels>Email</UserLabels>
-					<InputField
-						placeholder='Enter email'
-						type='email'
-						onChange={handleEmailChange}
-						required
-					/>
+
 					<SubmitButton type='submit'>Register and enter chat</SubmitButton>
 				</Form>
 			</FormWrapper>
@@ -70,7 +41,10 @@ export default function LandingPage() {
 const Wrapper = styled.div`
 	display: flex;
 	flex-direction: column;
-	margin-top: 16rem;
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.8);
+	width: 100%;
+	height: 100%;
 `;
 
 const FormWrapper = styled.div`
