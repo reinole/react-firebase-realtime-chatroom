@@ -16,22 +16,31 @@ export default function LandingPage() {
 		setValue(nickname, nickname);
 	};
 
+	const handleKeyDown = e => {
+		if (e.key === 'Enter') {
+			handleRegisterUser();
+		}
+	};
+
 	return (
 		<Wrapper>
 			<FormWrapper>
 				<FormTitle>Register User</FormTitle>
-				<Form onSubmit={handleRegisterUser}>
+				<Form>
 					<UserLabels>Nickname</UserLabels>
 					<InputField
 						placeholder='Enter nickname'
 						type='text'
 						onChange={handleNicknameChange}
 						required
-						minLength='5'
+						minLength='3'
 						maxLength='15'
+						onKeyDown={handleKeyDown}
 					/>
 
-					<SubmitButton type='submit'>Register and enter chat</SubmitButton>
+					<SubmitButton onClick={handleRegisterUser} type='submit'>
+						Register and enter chat
+					</SubmitButton>
 				</Form>
 			</FormWrapper>
 		</Wrapper>
@@ -55,7 +64,7 @@ const FormTitle = styled.h1`
 	margin: auto;
 `;
 
-const Form = styled.form`
+const Form = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
